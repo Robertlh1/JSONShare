@@ -94,7 +94,7 @@ app.post('/api/fileUpload', (req, res) => {
       var hashed = hash(file.name)
       file.mv('./db/files/' + file.name, () => {
         db.pool.query(`INSERT INTO files(user_id, filename, hash, url, date_created, size)
-        VALUES ($1, $2, $3, $4, current_timestamp, $5)`, [req.body.userID, file.name, hashed, `http://localhost:4000/api/download/${hashed}`, file.size])
+        VALUES ($1, $2, $3, $4, current_timestamp, $5)`, [req.body.userID, file.name, hashed, `http://18.233.161.174/api/download/${hashed}`, file.size])
       })
     }
   } catch (err) {

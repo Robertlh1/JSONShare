@@ -25,6 +25,7 @@ export default function MyNavbar(props) {
             <Nav.Link style={{color: "white"}} onClick={props.showLoginModal}>Login</Nav.Link>
             <Nav.Link style={{color: "white"}} onClick={props.showRegisterModal}>Register</Nav.Link>
           </Nav>
+          <Nav.Link style={{color: "white"}} href="https://www.linkedin.com/in/roberthasel/">My LinkedIn Profile</Nav.Link>
           </Navbar.Collapse>
         </Container>
       </Navbar>
@@ -45,6 +46,7 @@ export default function MyNavbar(props) {
           <Nav.Link style={{color: "white"}} onClick={props.showUploadModal}>Upload File</Nav.Link>
           <Nav.Link style={{color: "white"}} onClick={props.logOut}>Logout</Nav.Link>
           </Nav>
+          <Nav.Link style={{color: "white"}} href="https://www.linkedin.com/in/roberthasel/">My LinkedIn Profile</Nav.Link>
           </Navbar.Collapse>
         </Container>
       </Navbar>
