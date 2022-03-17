@@ -1,0 +1,61 @@
+body {
+  background-color: #FFE296 !important;
+  background-image: url('Young JSON.png');
+  background-repeat: no-repeat;
+  background-attachment: fixed;
+  background-position: center;
+  /* height: 100%; */
+}
+
+.red {
+  /* color: #CC200F !important; */
+  background-color: #CC200F !important;
+  color: white;
+}
+
+.gold {
+  background-color: #FFE296
+}
+
+.xbutton {
+  display: inline;
+  position: absolute;
+  right: 0%;
+  /* background: transparent; */
+  /* border: none !important; */
+}​
+
+.forms {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* #app {
+  background-image: url("3wu.svg")
+} */
+
+#mainImage {
+  display: block;
+  margin: auto;
+  height: auto;
+  width: 800px;
+}
+
+.cards {
+  width: 250px;
+  height: 330px;
+  text-align: center;
+}
+
+.cardImgs {
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  }
