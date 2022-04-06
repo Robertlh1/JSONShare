@@ -9,8 +9,8 @@ const path = require('path');
 const querystring = require('querystring');
 
 const app = express();
-// const serverAddress = 'http://ec2-13-57-254-191.us-west-1.compute.amazonaws.com'
-const serverAddress = 'http://localhost:4000'
+const serverAddress = 'http://ec2-13-57-254-191.us-west-1.compute.amazonaws.com'
+// const serverAddress = 'http://localhost:4000'
 app.use(express.static(path.join(__dirname, '../', 'client', 'dist')))
 app.use(express.static(path.join(__dirname, '../', 'client', 'dist', 'assets')))
 app.use(fileUpload({
