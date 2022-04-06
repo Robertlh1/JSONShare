@@ -9,6 +9,7 @@ const path = require('path');
 const querystring = require('querystring');
 
 const app = express();
+const serverAddress = 'http://ec2-13-57-254-191.us-west-1.compute.amazonaws.com'
 app.use(express.static(path.join(__dirname, '../', 'client', 'dist')))
 app.use(express.static(path.join(__dirname, '../', 'client', 'dist', 'assets')))
 app.use(fileUpload({
@@ -26,11 +27,12 @@ app.listen(4000, () => {
 })
 
 app.get('/api/download/*', (req, res) => {
-  db.pool.query('SELECT filename FROM files WHERE hash = $1', [req.params[0]], (err, result) => {
+  let file = req.params[0].split('/')
+  db.pool.query('SELECT filename FROM files WHERE hash = $1', [file[1]], (err, result) => {
     if (err) {
       res.status(404).send('This file does not exist.')
     } else {
-      res.download(`./db/files/${result.rows[0].filename}`)
+      res.download(`./db/files/${file[0]}/${result.rows[0].filename}`)
     }
   })
 })
@@ -68,14 +70,24 @@ app.post('/api/login', (req, res) => {
 
 app.post('/api/register', (req, res) => {
   db.pool.query(`INSERT INTO users (username, password, email) VALUES ($1, crypt($2, gen_salt('bf')), $3) RETURNING id, username`, [req.body.username, req.body.password, req.body.email], (err, results) => {
-    res.send(results.rows)
+    if (err) {
+      console.log(err)
+      res.status(500).send()
+    } else {
+      fs.mkdirSync(path.join(__dirname, "../", "db", "files", JSON.stringify(results.rows[0].id)))
+      res.send(results.rows)
+    }
   })
 })
 
 app.post('/api/files', (req, res) => {
   try {
     db.pool.query(`SELECT filename, url, hash FROM files WHERE user_id = $1 ORDER BY date_created DESC`, [req.body.userID], (err, result) => {
-      res.send(result.rows)
+      if (err) {
+        res.status(500).send()
+      } else {
+        res.send(result.rows)
+      }
     })
   } catch (err) {
     res.status(500).send(err)
@@ -92,9 +104,9 @@ app.post('/api/fileUpload', (req, res) => {
     } else {
       let file = req.files.myFile
       var hashed = hash(file.name)
-      file.mv('./db/files/' + file.name, () => {
+      file.mv('./db/files/' + req.body.userID + '/' + file.name, () => {
         db.pool.query(`INSERT INTO files(user_id, filename, hash, url, date_created, size)
-        VALUES ($1, $2, $3, $4, current_timestamp, $5)`, [req.body.userID, file.name, hashed, `http://18.233.161.174/api/download/${hashed}`, file.size])
+        VALUES ($1, $2, $3, $4, current_timestamp, $5)`, [req.body.userID, file.name, hashed, `${serverAddress}/api/download/${req.body.userID}/${hashed}`, file.size])
       })
     }
   } catch (err) {

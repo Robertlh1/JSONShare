@@ -13,7 +13,7 @@ export default function MyNavbar(props) {
     return(
       <Navbar variant="dark" className="red" expand="lg" sticky="top">
         <Container fluid>
-          <Navbar.Brand href="#">HMFS</Navbar.Brand>
+          <Navbar.Brand href="#">JSONShare</Navbar.Brand>
           <Navbar.Toggle aria-controls="navbarScroll" />
           <Navbar.Collapse id="navbarScroll">
           <Nav
@@ -26,6 +26,7 @@ export default function MyNavbar(props) {
             <Nav.Link style={{color: "white"}} onClick={props.showRegisterModal}>Register</Nav.Link>
           </Nav>
           <Nav.Link style={{color: "white"}} href="https://www.linkedin.com/in/roberthasel/">My LinkedIn Profile</Nav.Link>
+          <Nav.Link style={{color: "white"}} href="https://github.com/Robertlh1">My Github Profile</Nav.Link>
           </Navbar.Collapse>
         </Container>
       </Navbar>
@@ -34,7 +35,7 @@ export default function MyNavbar(props) {
     return(
       <Navbar variant="dark" className="red" expand="lg" sticky="top">
         <Container fluid>
-          <Navbar.Brand href="#">HMFS</Navbar.Brand>
+          <Navbar.Brand href="#">JSONShare</Navbar.Brand>
           <Navbar.Toggle aria-controls="navbarScroll" />
           <Navbar.Collapse id="navbarScroll">
           <Nav
@@ -47,6 +48,7 @@ export default function MyNavbar(props) {
           <Nav.Link style={{color: "white"}} onClick={props.logOut}>Logout</Nav.Link>
           </Nav>
           <Nav.Link style={{color: "white"}} href="https://www.linkedin.com/in/roberthasel/">My LinkedIn Profile</Nav.Link>
+          <Nav.Link style={{color: "white"}} href="https://github.com/Robertlh1">My Github Profile</Nav.Link>
           </Navbar.Collapse>
         </Container>
       </Navbar>
