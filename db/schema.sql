@@ -18,7 +18,7 @@ CREATE TABLE files(
   user_id INT NOT NULL,
   filename VARCHAR(255) NOT NULL,
   hash VARCHAR(20) NOT NULL,
-  url VARCHAR(60) NOT NULL,
+  url TEXT NOT NULL,
   date_created timestamp NOT NULL,
   size BIGINT NOT NULL,
   CONSTRAINT fk_user_id

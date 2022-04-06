@@ -22,6 +22,7 @@ export default function FileList(props) {
             hideDeleteModal={props.hideDeleteModal}
             modalState={props.modalState}
             loadFiles={props.loadFiles}
+            userID={props.userID}
           />
           </Col>
         ))}

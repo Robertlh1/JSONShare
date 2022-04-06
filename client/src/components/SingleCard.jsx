@@ -32,6 +32,7 @@ export default class SingleCard extends React.Component {
         onHide={this.hideDeleteModal.bind(this)}
         file={this.props.file}
         loadFiles={this.props.loadFiles}
+        userID={this.props.userID}
       />
       <button className="xbutton red" onClick={() => (this.showDeleteModal())}>X</button>
       <Card.Img variant="top" src={imageChecker(this.props.file)} className="cardImgs"/>

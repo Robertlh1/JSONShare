@@ -3,14 +3,15 @@ import axios from 'axios'
 import Modal from 'react-bootstrap/Modal'
 import Button from 'react-bootstrap/Button'
 
-export default class LoginModal extends React.Component {
+export default class RegisterModal extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
       registerUsername: '',
       registerPassword: '',
       confirmPassword: '',
-      registerEmail: ''
+      registerEmail: '',
+      passwordError: null
     }
   }
 
@@ -19,16 +20,21 @@ export default class LoginModal extends React.Component {
   }
 
   registerUser(event) {
-    console.log('registering')
     event.preventDefault()
-    axios.post('/api/register', {
-      username: this.state.registerUsername,
-      password: this.state.registerPassword,
-      email: this.state.registerEmail
-    })
-    .then(data => {
-      this.props.changeUser(JSON.parse(data.request.response)[0])
-    })
+    if (this.state.registerPassword !== this.state.confirmPassword) {
+      this.setState({passwordError: "The passwords don't match."})
+    } else {
+      this.setState({passwordError: null})
+      console.log('registering')
+      axios.post('/api/register', {
+        username: this.state.registerUsername,
+        password: this.state.registerPassword,
+        email: this.state.registerEmail
+      })
+      .then(data => {
+        this.props.changeUser(JSON.parse(data.request.response)[0])
+      })
+    }
   }
 
   render() {
@@ -46,6 +52,7 @@ export default class LoginModal extends React.Component {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body className="gold">
+          <div className="text-danger">{this.state.passwordError}</div>
           <form onSubmit={this.registerUser.bind(this)}>
             <input
               className="forms"
@@ -60,7 +67,7 @@ export default class LoginModal extends React.Component {
               className="forms"
               type="password"
               name="registerPassword"
-              minlength="10"
+              minLength="10"
               value={this.state.registerPassword}
               onChange={this.handleChange.bind(this)}
               placeholder="Password..."
@@ -70,7 +77,7 @@ export default class LoginModal extends React.Component {
               className="forms"
               type="password"
               name="confirmPassword"
-              minlength="10"
+              minLength="10"
               value={this.state.confirmPassword}
               onChange={this.handleChange.bind(this)}
               placeholder="Confirm Password..."

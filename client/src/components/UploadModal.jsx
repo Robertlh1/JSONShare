@@ -30,10 +30,14 @@ export default class UploadModal extends React.Component {
       this.props.userID
     )
     axios.post("api/fileUpload", formData)
-    axios.post('/api/files', {userID: this.state.userID})
-    this.setState({lastFileName: this.state.selectedFile.name, selectedFile: null, uploadFlag: true})
-    this.props.loadFiles()
-    this.props.onHide()
+    .then((res) => {
+      axios.post('/api/files', {userID: this.state.userID})
+      .then((res) => {
+        this.setState({lastFileName: this.state.selectedFile.name, selectedFile: null, uploadFlag: true})
+        this.props.loadFiles()
+        this.props.onHide()
+      })
+    })
   }
 
   render() {
@@ -46,7 +50,7 @@ export default class UploadModal extends React.Component {
         >
           <Modal.Header className="red" closeButton>
             <Modal.Title id="contained-modal-title-vcenter">
-              Upload a file!
+              Upload a file! There is a maximum size of 50mb.
             </Modal.Title>
           </Modal.Header>
           <Modal.Body className="gold">

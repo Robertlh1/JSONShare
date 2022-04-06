@@ -113,11 +113,13 @@ export default class App extends React.Component {
           showUploadModal={this.showUploadModal.bind(this)}
           hideUploadModal={this.hideUploadModal.bind(this)}
           userID={this.state.userID}
+          currentUser={this.state.currentUser}
           logOut={this.logOut.bind(this)}
         />
         <FileList
           currentUsersFiles={this.state.currentUsersFiles}
           loadFiles={this.loadFiles.bind(this)}
+          userID={this.state.userID}
         />
       </div>
     )

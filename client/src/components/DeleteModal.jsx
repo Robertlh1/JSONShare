@@ -13,7 +13,7 @@ export default class DeleteModal extends React.Component {
   deleteFile(event) {
     event.preventDefault();
     console.log(this.props.file)
-    axios.post('api/delete', {filename: this.props.file.filename, hash: this.props.file.hash})
+    axios.post('api/delete', {userID: this.props.userID, filename: this.props.file.filename, hash: this.props.file.hash})
     .then(this.props.loadFiles())
     this.props.onHide()
   }

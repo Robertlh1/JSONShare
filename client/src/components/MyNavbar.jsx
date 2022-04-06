@@ -45,8 +45,9 @@ export default function MyNavbar(props) {
           >
           <Nav.Link style={{color: "white"}} href="#action1">Home</Nav.Link>
           <Nav.Link style={{color: "white"}} onClick={props.showUploadModal}>Upload File</Nav.Link>
-          <Nav.Link style={{color: "white"}} onClick={props.logOut}>Logout</Nav.Link>
           </Nav>
+          <Navbar.Text style={{color: "white"}}>Welcome {props.currentUser}</Navbar.Text>
+          <Nav.Link style={{color: "white"}} onClick={props.logOut}>Logout</Nav.Link>
           <Nav.Link style={{color: "white"}} href="https://www.linkedin.com/in/roberthasel/">My LinkedIn Profile</Nav.Link>
           <Nav.Link style={{color: "white"}} href="https://github.com/Robertlh1">My Github Profile</Nav.Link>
           </Navbar.Collapse>
