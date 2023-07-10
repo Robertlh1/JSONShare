@@ -1,11 +1,9 @@
-const Pool = require('pg').Pool
+import pg from 'pg';
+
+const { Pool } = pg;
+
 const pool = new Pool({
-  // user: 'robertlh1',
-  user: 'ubuntu',
-  host: 'localhost',
-  database: 'ubuntu',
-  password: 'yeeboy',
-  port: 5432,
+  connectionString: process.env.POSTGRES_URL + "?sslmode=require",
 })
 
 module.exports = {pool: pool}
