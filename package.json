@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Robertlh1/MVP#readme",
   "dependencies": {
+    "@vercel/postgres": "^0.4.0",
     "axios": "^0.26.1",
     "body-parser": "^1.19.2",
     "bootstrap": "^5.1.3",
