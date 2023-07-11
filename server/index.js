@@ -3,12 +3,13 @@ import fileUpload from 'express-fileupload'
 import fs from 'fs'
 import bodyParser from 'body-parser'
 import hash from './hash.js'
-import db from '../db/connection.js'
+import { db } from '@vercel/postgres';
 import {fileURLToPath} from 'url'
 import path from 'path'
 import querystring from 'querystring'
 import dotenv from 'dotenv'
-dotenv.config()
+dotenv.config({path: './.env.local'})
+const client = await db.connect()
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -66,27 +67,32 @@ app.post('/api/delete', (req, res) => {
   })
 })
 
-app.post('/api/login', (req, res) => {
-  db.pool.query(`SELECT id, username FROM users WHERE username = $1 AND password = crypt($2, password)`, [req.body.username, req.body.password], (err, result) => {
-    if (result.rows.length === 0) {
-      res.send([{id: 'No'}])
-    } else {
-      res.send(result.rows)
-    }
-  })
+app.post('/api/login', async (req, res) => {
+  let un = req.body.username, pw = req.body.password
+  try {
+    const { rows } = await client.sql`SELECT id, username FROM users WHERE username = ${un} AND password = crypt(${pw}, password)`
+    console.log(`${un} has logged in at ${new Date()}`)
+    res.send(rows)
+  } catch(error) {
+    res.status(500).send([{id:'No'}]);
+  }
 })
 
-app.post('/api/register', (req, res) => {
-  db.pool.query(`INSERT INTO users (username, password, email) VALUES ($1, crypt($2, gen_salt('bf')), $3) RETURNING id, username`, [req.body.username, req.body.password, req.body.email], (err, results) => {
-    if (err) {
-      console.log(err)
-      res.status(500).send()
-    } else {
-      console.log(`${req.body.username} has registered`)
-      fs.mkdirSync(path.join(__dirname, "../", "db", "files", JSON.stringify(results.rows[0].id)))
-      res.send(results.rows)
-    }
-  })
+app.post('/api/register', async (req, res) => {
+  let un = req.body.username, pw = req.body.password, em = req.body.email
+  try {
+    await client.sql`INSERT INTO users (username, password, email) VALUES (${un}, crypt(${pw}, gen_salt('bf')), ${em}) RETURNING id, username;`
+  } catch(error) {
+    res.status(500).json({ error });
+  }
+  try {
+    let {rows} = await client.sql`SELECT id, username FROM users WHERE email = ${em}`
+    console.log(`${un} has registered at ${new Date()}`)
+    fs.mkdirSync(path.join(__dirname, "../", "db", "files", JSON.stringify(rows[0].id)))
+    res.send(rows)
+  } catch(error) {
+    res.status(500).json({error})
+  }
 })
 
 app.post('/api/files', (req, res) => {
