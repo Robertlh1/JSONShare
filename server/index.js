@@ -1,12 +1,16 @@
-const express = require('express');
-const fileUpload = require('express-fileupload');
-const fs = require('fs');
-const bodyParser = require('body-parser');
-const hash = require('./hash.js')
-const db = require('../db/connection.js');
-const url = require('url');
-const path = require('path');
-const querystring = require('querystring');
+import express from 'express'
+import fileUpload from 'express-fileupload'
+import fs from 'fs'
+import bodyParser from 'body-parser'
+import hash from './hash.js'
+import db from '../db/connection.js'
+import {fileURLToPath} from 'url'
+import path from 'path'
+import querystring from 'querystring'
+import dotenv from 'dotenv'
+dotenv.config()
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
 const app = express();
 const serverAddress = 'http://ec2-13-57-254-191.us-west-1.compute.amazonaws.com'
