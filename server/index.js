@@ -14,8 +14,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express();
-// const serverAddress = 'https://json-share.vercel.app'
-const serverAddress = 'http://localhost:4000'
+const serverAddress = 'https://json-share.vercel.app'
 app.use(express.static(path.join(__dirname, '../', 'client', 'dist')))
 app.use(express.static(path.join(__dirname, '../', 'client', 'dist', 'assets')))
 app.use(fileUpload({
