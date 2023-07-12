@@ -39,11 +39,6 @@ app.get('/api', async (req, res) => {
   res.end(`Hello! Go to item: <a href="${path}">${path}</a>`);
 });
 
-app.get('/api/pets', async (req, res) => {
-  const pets = await client.sql`SELECT * FROM Pets;`;
-  res.status(200).json(pets.rows);
-})
-
 app.get('/api/download/*', async (req, res) => {
   let file = req.params[0].split('/'), hs = file[1]
   console.log(`Received download request for ${file} at ${new Date()}`)
