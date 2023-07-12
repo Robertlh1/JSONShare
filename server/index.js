@@ -31,6 +31,11 @@ app.listen(4000, () => {
   console.log('Server listening on port 4000')
 })
 
+app.get('/api/pets', async (req, res) => {
+  const pets = await client.sql`SELECT * FROM Pets;`;
+  res.status(200).json(pets.rows);
+})
+
 app.get('/api/download/*', async (req, res) => {
   let file = req.params[0].split('/'), hs = file[1]
   console.log(`Received download request for ${file} at ${new Date()}`)
@@ -98,7 +103,7 @@ app.post('/api/files', async (req, res) => {
     let {rows} = await client.sql`SELECT filename, url, hash FROM files WHERE user_id = ${uid} ORDER BY date_created DESC`
     res.send(rows)
   } catch(error) {
-    res.status(500).json(err)
+    res.status(500).json(error)
   }
 })
 
