@@ -15,8 +15,8 @@ const __dirname = path.dirname(__filename)
 
 const app = express();
 const serverAddress = 'https://json-share.vercel.app'
-app.use(express.static(path.join(__dirname, '../', 'client', 'dist')))
-app.use(express.static(path.join(__dirname, '../', 'client', 'dist', 'assets')))
+// app.use(express.static(path.join(__dirname, '../', 'client', 'dist')))
+// app.use(express.static(path.join(__dirname, '../', 'client', 'dist', 'assets')))
 app.use(fileUpload({
   createParentPath: true,
   safeFileNames: true,
