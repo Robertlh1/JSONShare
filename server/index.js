@@ -14,8 +14,8 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 const app = express();
-const serverAddress = 'http://ec2-13-57-254-191.us-west-1.compute.amazonaws.com'
-// const serverAddress = 'http://localhost:4000'
+// const serverAddress = 'https://json-share.vercel.app'
+const serverAddress = 'http://localhost:4000'
 app.use(express.static(path.join(__dirname, '../', 'client', 'dist')))
 app.use(express.static(path.join(__dirname, '../', 'client', 'dist', 'assets')))
 app.use(fileUpload({
@@ -32,39 +32,37 @@ app.listen(4000, () => {
   console.log('Server listening on port 4000')
 })
 
-app.get('/api/download/*', (req, res) => {
-  console.log('Recieved download request')
-  let file = req.params[0].split('/')
-  db.pool.query('SELECT filename FROM files WHERE hash = $1', [file[1]], (err, result) => {
-    if (err) {
-      console.log('Download Failed', err)
-      res.status(404).send('This file does not exist.')
-    } else {
-      let downloadFile = `./db/files/${file[0]}/${result.rows[0].filename}`
-      console.log(downloadFile, ' successfully downloaded')
-      res.download(downloadFile)
-    }
-  })
+app.get('/api/download/*', async (req, res) => {
+  let file = req.params[0].split('/'), hs = file[1]
+  console.log(`Received download request for ${file} at ${new Date()}`)
+  try {
+    let {rows} = await client.sql`SELECT filename FROM files WHERE hash = ${hs}`
+    let downloadFile = `./db/files/${file[0]}/${rows[0].filename}`
+    await res.download(downloadFile)
+    console.log(`${downloadFile} successfully downloaded at ${new Date()}`)
+  } catch(error) {
+    console.log('Download Failed', error)
+    res.status(404).send('This file does not exist.')
+  }
 })
 
-app.post('/api/delete', (req, res) => {
-  console.log('Recieved delete request')
-  db.pool.query(`DELETE FROM files WHERE hash = $1 AND user_id = $2`, [req.body.hash, req.body.userID], (err, result) => {
-    if (err) {
-      console.log('Database deletion failed', err)
-      res.send(err)
-    } else {
-      fs.unlink(`./db/files/${req.body.userID}/${req.body.filename}`, (deleteErr, deleteResult) => {
-        if (deleteErr) {
-          console.log('Delete failed', deleteErr)
-          res.send(deleteErr)
-        } else {
-          console.log(`${req.body.filename} successfully deleted by user ${req.body.userID}`)
-          res.send(deleteResult)
-        }
-      })
-    }
-  })
+app.post('/api/delete', async (req, res) => {
+  let ha = req.body.hash, uid = req.body.userID, fn = req.body.filename
+  console.log(`Recieved delete request from user ${uid} for file ${ha} at ${new Date()}`)
+  try {
+    await client.sql`DELETE from files WHERE hash = ${ha} AND user_id = ${uid}`
+    fs.unlink(`./db/files/${uid}/${fn}`, (deleteErr, deleteResult) => {
+      if (deleteErr) {
+        console.log('Unable to delete file from hard drive', deleteErr)
+        res.send(deleteErr)
+      }
+      console.log(`${fn} successfully deleted by user ${uid} at ${new Date()}`)
+      res.send(deleteResult)
+    })
+  } catch(error) {
+    console.log('Database deletion failed', error)
+    res.send(error)
+  }
 })
 
 app.post('/api/login', async (req, res) => {
@@ -95,43 +93,34 @@ app.post('/api/register', async (req, res) => {
   }
 })
 
-app.post('/api/files', (req, res) => {
+app.post('/api/files', async (req, res) => {
+  let uid = req.body.userID
   try {
-    db.pool.query(`SELECT filename, url, hash FROM files WHERE user_id = $1 ORDER BY date_created DESC`, [req.body.userID], (err, result) => {
-      if (err) {
-        res.status(500).send()
-      } else {
-        res.send(result.rows)
-      }
-    })
-  } catch (err) {
-    res.status(500).send(err)
+    let {rows} = await client.sql`SELECT filename, url, hash FROM files WHERE user_id = ${uid} ORDER BY date_created DESC`
+    res.send(rows)
+  } catch(error) {
+    res.status(500).json(err)
   }
 })
 
-app.post('/api/fileUpload', (req, res) => {
+app.post('/api/fileUpload', async (req, res) => {
+  let uid = req.body.userID, file = req.files.myFile, hashed = hash(file.name)
+  let address = `${serverAddress}/api/download/${uid}/${hashed}`
   try {
     if (!req.files) {
-      res.send({
-        status: false,
-        message: 'No file recieved'
-      })
+      res.send({status: false, message: 'No file received'})
     } else {
-      let file = req.files.myFile
-      var hashed = hash(file.name)
-      file.mv('./db/files/' + req.body.userID + '/' + file.name, () => {
-        db.pool.query(`INSERT INTO files(user_id, filename, hash, url, date_created, size)
-        VALUES ($1, $2, $3, $4, current_timestamp, $5)`, [req.body.userID, file.name, hashed, `${serverAddress}/api/download/${req.body.userID}/${hashed}`, file.size], (err, result) => {
-          if (err) {
-            res.status(500).send()
-          } else {
-            console.log(`Uploaded ${file.name} from user ${req.body.userID}`)
-            res.send('success')
-          }
+      try {
+        file.mv(`./db/files/${uid}/${file.name}`, async () => {
+          await client.sql`INSERT INTO files(user_id, filename, hash, url, date_created, size) VALUES (${uid}, ${file.name}, ${hashed}, ${address}, current_timestamp, ${file.size})`
         })
-      })
+      } catch(error) {
+        res.status(500).json(error)
+      }
     }
-  } catch (err) {
-    res.status(500).send(err);
+  } catch(error) {
+    res.status(500).json(error)
   }
+  console.log(`Uploaded ${file.name} from user ${req.body.userID}`)
+  res.send('success')
 })
