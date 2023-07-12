@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "react-dev": "webpack --config ./webpack.config.cjs",
-    "express-dev": "pm2 start ./server/index.js",
+    "express-dev": "pm2 start ./api/index.js",
     "postgres-start": "psql -f ./db/schema.sql mvp"
   },
   "repository": {
