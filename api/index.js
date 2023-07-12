@@ -8,6 +8,7 @@ import {fileURLToPath} from 'url'
 import path from 'path'
 import querystring from 'querystring'
 import dotenv from 'dotenv'
+import { v4 } from 'uuid'
 dotenv.config({path: './.env.local'})
 const client = await db.connect()
 const __filename = fileURLToPath(import.meta.url)
@@ -30,6 +31,13 @@ app.use(bodyParser.urlencoded({extended: true}));
 app.listen(4000, () => {
   console.log('Server listening on port 4000')
 })
+
+app.get('/api', async (req, res) => {
+  const path = `/api/item/${v4()}`;
+  res.setHeader('Content-Type', 'text/html');
+  res.setHeader('Cache-Control', 's-max-age=1, stale-while-revalidate');
+  res.end(`Hello! Go to item: <a href="${path}">${path}</a>`);
+});
 
 app.get('/api/pets', async (req, res) => {
   const pets = await client.sql`SELECT * FROM Pets;`;
